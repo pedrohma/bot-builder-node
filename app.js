@@ -14,5 +14,3 @@ var connector = new builder.ChatConnector({
 });
 
 require('./chat.js')(server, builder, connector);
-
-process.env.UV_THREADPOOL_SIZE = 128;

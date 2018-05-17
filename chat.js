@@ -1,7 +1,6 @@
 var uspsTracking = require('./usps.js');
 
 module.exports = function (server, builder, connector) {
-
     
     server.post('/api/messages', connector.listen());
 
