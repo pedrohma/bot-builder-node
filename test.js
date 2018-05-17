@@ -1,0 +1,3 @@
+function(){
+    dom.parseError.srcText = "";
+}

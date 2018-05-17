@@ -1,28 +1,24 @@
-const https = require('https');
+let request = require('async-request'),
+  response;
 
-module.exports = function (tracking) {
+module.exports = async function (tracking) {
+  var data = "";
+  var url = "http://production.shippingapis.com/ShippingAPI.dll?API=TrackV2&XML=<TrackRequest USERID=\"YOUR_USER_ID\"><TrackID ID=\"" + tracking + "\"></TrackID></TrackRequest>";
 
-  console.log('start here');
+  try {
 
-  var url = "https://production.shippingapis.com/ShippingAPI.dll?API=TrackV2&XML=<TrackRequest USERID=\"YOUR_USER_ID\"><TrackID ID=\"" + tracking + "\"></TrackID></TrackRequest>";
+    response = await request(url);
 
-  let data = '';
+    data = response.body;
 
-  https.get(url, (resp) => {
-
-    // A chunk of data has been recieved.
-    resp.on('data', (chunk) => {
-      data += chunk;
+    await request(url, {
+      method: 'GET'
     });
 
-    // The whole response has been received. Print out the result.
-    resp.on('end', () => {
-      console.log(JSON.parse(data).explanation);
-    });
-
-  }).on("error", (err) => {
-    console.log("Error: " + err.message);
-  });
+  } catch (e) {
+    data = e;
+    console.log(e);
+  }
 
   return data;
 }

@@ -2,12 +2,12 @@ var uspsTracking = require('./usps.js');
 
 module.exports = function (server, builder, connector) {
 
-    // Listen for messages from users 
+    
     server.post('/api/messages', connector.listen());
 
     var inMemoryStorage = new builder.MemoryBotStorage();
 
-    // Receive messages from the user and respond by echoing each message back (prefixed with 'You said:')
+    
     var bot = new builder.UniversalBot(connector, [
         function (session) {
             session.beginDialog('greetings', session.userData.profile);
@@ -57,22 +57,33 @@ module.exports = function (server, builder, connector) {
     ]);
 
     bot.dialog('track_a_package', [
-        // Step 1
+        
         function (session) {
             builder.Prompts.text(session, 'Can you please provide me your tracking number?');
         },
-        // Step 2
-        function (session, results) {
+        
+        async function (session, results) {
             session.send("Thank you... Please wait while I'm processing your request...");
             session.sendTyping();
             var tracking = results.response;
-            var data = uspsTracking(tracking);
+            var data = await GetUSPSTrackingData(tracking);
 
-            console.log(data);
-            session.send(data);
-            session.endDialog();
-            console.log('finished');
+            setTimeout(function (){
+                if(data == null){
+                    session.send('nothing returned');
+                    session.endDialog();
+                }
+                else{
+                    session.send(data);
+                    session.endDialog();
+                }
+                    console.log('finished');
+            }, 5000);            
         }
     ]);
 }
 
+async function GetUSPSTrackingData(tracking){
+    var data = await uspsTracking(tracking);
+    return data;
+}
