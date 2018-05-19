@@ -1,4 +1,5 @@
 var uspsTracking = require('./usps.js');
+var parser = require('xml2json');
 
 module.exports = function (server, builder, connector) {
     
@@ -66,23 +67,37 @@ module.exports = function (server, builder, connector) {
             session.sendTyping();
             var tracking = results.response;
             var data = await GetUSPSTrackingData(tracking);
+            
+            try{
+                setTimeout(function (){
+                    console.log('goes here');
 
-            setTimeout(function (){
-                if(data == null){
-                    session.send('nothing returned');
-                    session.endDialog();
-                }
-                else{
-                    session.send(data);
-                    session.endDialog();
-                }
-                    console.log('finished');
-            }, 5000);            
+                    if(data == null){
+                        session.send('nothing returned');
+                        session.endDialog();
+                    }
+                    else{
+                        console.log(data);
+                        console.log(data.TrackResponse.TrackInfo.Error.Description);
+                        session.send(data.TrackResponse.TrackInfo.Error.Description);
+                        session.endDialog();
+                    }
+                        console.log('finished');
+                }, 7000); 
+            }
+            catch(error){
+                console.log('there was en exception');
+                console.log(error);
+            }
+                       
         }
     ]);
 }
 
 async function GetUSPSTrackingData(tracking){
-    var data = await uspsTracking(tracking);
-    return data;
+    var xml = await uspsTracking(tracking);
+    var json = parser.toJson(xml);
+     var obj = JSON.parse(json);
+     //console.log(obj.TrackResponse.TrackInfo);
+    return obj;
 }
