@@ -78,8 +78,24 @@ module.exports = function (server, builder, connector) {
                     }
                     else{
                         console.log(data);
-                        console.log(data.TrackResponse.TrackInfo.Error.Description);
-                        session.send(data.TrackResponse.TrackInfo.Error.Description);
+                        if(data.TrackResponse.TrackInfo.Error != null){
+                            console.log(data.TrackResponse.TrackInfo.Error.Description);
+                            session.send(data.TrackResponse.TrackInfo.Error.Description);
+                        }
+                        else if(data.TrackResponse.TrackInfo.TrackSummary != null){
+                            console.log(data.TrackResponse.TrackInfo.TrackSummary);
+                            session.send(data.TrackResponse.TrackInfo.TrackSummary);
+                        }
+                        else if(data.TrackResponse.TrackInfo.TrackDetail != null){
+                            var msgs = data.TrackResponse.TrackInfo.TrackDetail;
+                            console.log(msgs);
+                            session.send(msgs[0]);
+                        }
+                        else{
+                            session.send('error');
+                            session.endDialog();
+                        }
+                        
                         session.endDialog();
                     }
                         console.log('finished');
