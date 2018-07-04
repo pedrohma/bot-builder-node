@@ -1,5 +1,5 @@
-var uspsTracking = require('./usps.js');
-var parser = require('xml2json');
+var uspsTracking = require('./model/usps');
+const usps = require('./model/usps');
 
 module.exports = function (server, builder, connector) {
     
@@ -66,36 +66,34 @@ module.exports = function (server, builder, connector) {
             session.send("Thank you... Please wait while I'm processing your request...");
             session.sendTyping();
             var tracking = results.response;
-            var data = await GetUSPSTrackingData(tracking);
+            var data = await usps.getShippingInfo(tracking);
             
             try{
                 setTimeout(function (){
-                    console.log('goes here');
-
                     if(data == null){
                         session.send('nothing returned');
                         session.endDialog();
                     }
                     else{
                         console.log(data);
-                        if(data.TrackResponse.TrackInfo.Error != null){
-                            console.log(data.TrackResponse.TrackInfo.Error.Description);
-                            session.send(data.TrackResponse.TrackInfo.Error.Description);
-                        }
-                        else if(data.TrackResponse.TrackInfo.TrackSummary != null){
-                            console.log(data.TrackResponse.TrackInfo.TrackSummary);
-                            session.send(data.TrackResponse.TrackInfo.TrackSummary);
-                        }
-                        else if(data.TrackResponse.TrackInfo.TrackDetail != null){
-                            var msgs = data.TrackResponse.TrackInfo.TrackDetail;
-                            console.log(msgs);
-                            session.send(msgs[0]);
-                        }
-                        else{
-                            session.send('error');
-                            session.endDialog();
-                        }
-                        
+                        // if(data.TrackResponse.TrackInfo.Error != null){
+                        //     console.log(data.TrackResponse.TrackInfo.Error.Description);
+                        //     session.send(data.TrackResponse.TrackInfo.Error.Description);
+                        // }
+                        // else if(data.TrackResponse.TrackInfo.TrackSummary != null){
+                        //     console.log(data.TrackResponse.TrackInfo.TrackSummary);
+                        //     session.send(data.TrackResponse.TrackInfo.TrackSummary);
+                        // }
+                        // else if(data.TrackResponse.TrackInfo.TrackDetail != null){
+                        //     var msgs = data.TrackResponse.TrackInfo.TrackDetail;
+                        //     console.log(msgs);
+                        //     session.send(msgs[0]);
+                        // }
+                        // else{
+                        //     session.send('error');
+                        //     session.endDialog();
+                        // }
+                        session.send(data);
                         session.endDialog();
                     }
                         console.log('finished');
