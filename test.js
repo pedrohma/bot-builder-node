@@ -1,5 +1,3 @@
-
-
 const usps = require('./model/usps');
 
 
@@ -8,4 +6,5 @@ async function testing(){
     console.log(xml);
 
 }
- testing();
+
+testing();
